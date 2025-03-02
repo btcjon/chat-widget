@@ -1,6 +1,6 @@
 // Mia Chat Widget Script (Custom Version)
 (function() {
-    console.log("Loading custom Mia Chat Widget v1.0");
+    console.log("Loading custom Mia Chat Widget v1.1");
     
     // Create and inject styles
     const styles = `
@@ -99,6 +99,7 @@
             color: var(--chat--color-font);
             margin-bottom: 24px;
             line-height: 1.3;
+            letter-spacing: -0.5px;
         }
 
         .mia-chat-widget .new-chat-btn {
@@ -204,15 +205,13 @@
             resize: none;
             font-family: inherit;
             font-size: 14px;
-            min-height: 24px;
+            height: 42px;
+            min-height: 42px;
             max-height: 120px;
             overflow-y: auto;
             line-height: 1.4;
-        }
-
-        .mia-chat-widget .chat-input textarea::placeholder {
-            color: var(--chat--color-font);
-            opacity: 0.6;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .mia-chat-widget .chat-input button {
@@ -230,6 +229,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .mia-chat-widget .chat-input button:hover {
@@ -348,6 +348,18 @@
     widgetContainer.style.setProperty('--mia-chat-background-color', config.style.backgroundColor);
     widgetContainer.style.setProperty('--mia-chat-font-color', config.style.fontColor);
 
+    // Force image to update by adding a unique timestamp
+    function updateImageWithTimestamp(imgElement, originalSrc) {
+        if (!originalSrc) return;
+        
+        const timestamp = new Date().getTime();
+        if (originalSrc.includes('?')) {
+            imgElement.src = `${originalSrc}&_t=${timestamp}`;
+        } else {
+            imgElement.src = `${originalSrc}?_t=${timestamp}`;
+        }
+    }
+
     // Create the chat container
     const chatContainer = document.createElement('div');
     chatContainer.className = `chat-container${config.style.position === 'left' ? ' position-left' : ''}`;
@@ -389,7 +401,13 @@
     
     const welcomeHeading = document.createElement('h2');
     welcomeHeading.className = 'welcome-text';
-    welcomeHeading.textContent = config.branding.welcomeText || '';
+    
+    // Handle welcome text with emoji
+    if (config.branding.welcomeText && config.branding.welcomeText.includes('👋')) {
+        welcomeHeading.innerHTML = config.branding.welcomeText.replace('👋', '<span style="display:inline-block;margin:0 4px;">👋</span>');
+    } else {
+        welcomeHeading.textContent = config.branding.welcomeText || '';
+    }
     
     const newChatButton = document.createElement('button');
     newChatButton.className = 'new-chat-btn';
@@ -497,14 +515,14 @@
         // Add initial welcome message from bot
         const botMessage = document.createElement('div');
         botMessage.className = 'chat-message bot';
-        botMessage.textContent = config.branding.welcomeText || 'Hi, how can I help you today?';
         
-        // If the message isn't showing emoji properly, force it through a span with innerHtml
+        // If the message contains an emoji, use innerHTML with proper spacing
         if (config.branding.welcomeText && config.branding.welcomeText.includes('👋')) {
-            botMessage.textContent = '';
-            const textSpan = document.createElement('span');
-            textSpan.innerHTML = config.branding.welcomeText;
-            botMessage.appendChild(textSpan);
+            const spanElement = document.createElement('span');
+            spanElement.innerHTML = config.branding.welcomeText.replace('👋', '<span style="display:inline-block;margin:0 4px;">👋</span>');
+            botMessage.appendChild(spanElement);
+        } else {
+            botMessage.textContent = config.branding.welcomeText || 'Hi, how can I help you today?';
         }
         
         chatMessagesDiv.appendChild(botMessage);
@@ -600,6 +618,7 @@
         if (message) {
             sendMessage(message);
             chatTextarea.value = '';
+            chatTextarea.style.height = '42px'; // Reset height after sending
         }
     });
     
@@ -610,6 +629,7 @@
             if (message) {
                 sendMessage(message);
                 chatTextarea.value = '';
+                chatTextarea.style.height = '42px'; // Reset height after sending
             }
         }
     });
@@ -628,9 +648,9 @@
     
     // Auto-growing textarea
     chatTextarea.addEventListener('input', function() {
-        this.style.height = 'auto';
+        this.style.height = '42px'; // Reset height
         this.style.height = (this.scrollHeight) + 'px';
     });
     
-    console.log("Mia Chat Widget initialized successfully");
-})(); 
+    console.log("Mia Chat Widget initialized successfully v1.1");
+})();
