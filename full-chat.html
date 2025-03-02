@@ -1,3 +1,33 @@
+<!-- N8N Chat Widget -->
+<script>
+  window.ChatWidgetConfig = {
+    webhook: {
+      url: 'https://n8n-gk044o0kg0gookc840oosok0.aifunnel.chat/webhook/53c136fe-3e77-4709-a143-fe82746dd8b6',
+      route: 'general',
+      // Enable this to test the UI without a working webhook
+      useMockData: true 
+    },
+    branding: {
+      logo: 'https://miaflint.com/wp-content/uploads/2025/03/Mia-Flint-2025-03-02-at-9.25.21-AM.jpg',
+      name: 'mia',
+      welcomeText: 'Hi 👋, how can we help?',
+      responseTimeText: 'We typically respond right away',
+      poweredBy: {
+        text: 'Powered by mia',
+        link: '#'
+      }
+    },
+    style: {
+      primaryColor: '#854fff',
+      secondaryColor: '#6b3fd4',
+      position: 'right',
+      backgroundColor: '#ffffff',
+      fontColor: '#333333'
+    }
+  };
+</script>
+
+<script>
 // Chat Widget Script
 (function() {
     // Create and inject styles
@@ -7,7 +37,8 @@
             --chat--color-secondary: var(--n8n-chat-secondary-color, #6b3fd4);
             --chat--color-background: var(--n8n-chat-background-color, #ffffff);
             --chat--color-font: var(--n8n-chat-font-color, #333333);
-            font-family: 'Geist Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            /* Using system fonts instead of external Geist Sans */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
         .n8n-chat-widget .chat-container {
@@ -273,13 +304,7 @@
         }
     `;
 
-    // Load Geist font
-    const fontLink = document.createElement('link');
-    fontLink.rel = 'stylesheet';
-    fontLink.href = 'https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css';
-    document.head.appendChild(fontLink);
-
-    // Inject styles
+    // Inject styles directly (no external stylesheet)
     const styleSheet = document.createElement('style');
     styleSheet.textContent = styles;
     document.head.appendChild(styleSheet);
@@ -288,7 +313,8 @@
     const defaultConfig = {
         webhook: {
             url: '',
-            route: ''
+            route: '',
+            useMockData: false
         },
         branding: {
             logo: '',
@@ -297,7 +323,7 @@
             responseTimeText: '',
             poweredBy: {
                 text: 'Powered by n8n',
-                link: 'https://n8n.partnerlinks.io/m8a94i19zhqq?utm_source=nocodecreative.io'
+                link: 'https://n8n.io'
             }
         },
         style: {
@@ -316,6 +342,17 @@
             branding: { ...defaultConfig.branding, ...window.ChatWidgetConfig.branding },
             style: { ...defaultConfig.style, ...window.ChatWidgetConfig.style }
         } : defaultConfig;
+    
+    // Mock data for testing without a working webhook
+    const mockResponses = {
+        initial: [{ output: "Hello! I'm your virtual assistant. How can I help you today?" }],
+        responses: [
+            { output: "Thanks for your message! I'll do my best to help with that." },
+            { output: "Good question! Let me find that information for you." },
+            { output: "I understand what you're asking. Here's what I can tell you..." },
+            { output: "I appreciate your patience. Is there anything else you'd like to know?" }
+        ]
+    };
 
     // Prevent multiple initializations
     if (window.N8NChatWidgetInitialized) return;
@@ -338,7 +375,7 @@
     
     const newConversationHTML = `
         <div class="brand-header">
-            <img src="${config.branding.logo}" alt="${config.branding.name}">
+            <img src="${config.branding.logo}" alt="${config.branding.name}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSIxNiIgZmlsbD0iIzg1NGZmZiIvPjxwYXRoIGQ9Ik0xNiAxMC42NjdDMTMuMDUzIDEwLjY2NyAxMC42NjcgMTMuMDUzIDEwLjY2NyAxNkMxMC42NjcgMTguOTQ3IDEzLjA1MyAyMS4zMzMgMTYgMjEuMzMzQzE4Ljk0NyAyMS4zMzMgMjEuMzMzIDE4Ljk0NyAyMS4zMzMgMTZDMjEuMzMzIDEzLjA1MyAxOC45NDcgMTAuNjY3IDE2IDEwLjY2N1oiIGZpbGw9IndoaXRlIi8+PC9zdmc+'; this.style.borderRadius='50%';">
             <span>${config.branding.name}</span>
             <button class="close-button">×</button>
         </div>
@@ -357,7 +394,7 @@
     const chatInterfaceHTML = `
         <div class="chat-interface">
             <div class="brand-header">
-                <img src="${config.branding.logo}" alt="${config.branding.name}">
+                <img src="${config.branding.logo}" alt="${config.branding.name}" onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSIxNiIgZmlsbD0iIzg1NGZmZiIvPjxwYXRoIGQ9Ik0xNiAxMC42NjdDMTMuMDUzIDEwLjY2NyAxMC42NjcgMTMuMDUzIDEwLjY2NyAxNkMxMC42NjcgMTguOTQ3IDEzLjA1MyAyMS4zMzMgMTYgMjEuMzMzQzE4Ljk0NyAyMS4zMzMgMjEuMzMzIDE4Ljk0NyAyMS4zMzMgMTZDMjEuMzMzIDEzLjA1MyAxOC45NDcgMTAuNjY3IDE2IDEwLjY2N1oiIGZpbGw9IndoaXRlIi8+PC9zdmc+'; this.style.borderRadius='50%';">
                 <span>${config.branding.name}</span>
                 <button class="close-button">×</button>
             </div>
@@ -367,7 +404,7 @@
                 <button type="submit">Send</button>
             </div>
             <div class="chat-footer">
-                <a href="${config.branding.poweredBy.link}" target="_blank">${config.branding.poweredBy.text}</a>
+                <a href="${config.branding.poweredBy?.link || '#'}" target="_blank">${config.branding.poweredBy?.text || 'Powered by n8n'}</a>
             </div>
         </div>
     `;
@@ -392,7 +429,15 @@
     const sendButton = chatContainer.querySelector('button[type="submit"]');
 
     function generateUUID() {
-        return crypto.randomUUID();
+        // Fallback for browsers that don't support crypto.randomUUID()
+        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+            return crypto.randomUUID();
+        } else {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
     }
 
     async function startNewConversation() {
@@ -406,8 +451,33 @@
             }
         }];
 
+        // Show the chat interface first for better UX
+        chatContainer.querySelector('.brand-header').style.display = 'none';
+        chatContainer.querySelector('.new-conversation').style.display = 'none';
+        chatInterface.classList.add('active');
+
+        // If mock data is enabled, use that instead of calling the webhook
+        if (config.webhook.useMockData) {
+            console.log('Using mock data instead of webhook (debug mode)');
+            const responseData = mockResponses.initial;
+            
+            const botMessageDiv = document.createElement('div');
+            botMessageDiv.className = 'chat-message bot';
+            botMessageDiv.textContent = responseData[0].output;
+            messagesContainer.appendChild(botMessageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return;
+        }
+
         try {
-            const response = await fetch(config.webhook.url, {
+            console.log('Connecting to webhook:', config.webhook.url);
+            console.log('Sending data:', JSON.stringify(data));
+            
+            // Add special parameter to help diagnose webhook issues
+            const url = new URL(config.webhook.url);
+            url.searchParams.append('debug', 'true');
+            
+            const response = await fetch(url.toString(), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -415,18 +485,65 @@
                 body: JSON.stringify(data)
             });
 
-            const responseData = await response.json();
-            chatContainer.querySelector('.brand-header').style.display = 'none';
-            chatContainer.querySelector('.new-conversation').style.display = 'none';
-            chatInterface.classList.add('active');
+            // Check for CORS issues
+            if (response.type === 'opaque') {
+                console.error('CORS issue detected: The response is "opaque", which means CORS is blocking access');
+                throw new Error('CORS issue - webhook not accessible due to cross-origin restrictions');
+            }
 
+            if (!response.ok) {
+                // Log detailed HTTP error information
+                console.error(`HTTP Error: ${response.status} ${response.statusText}`);
+                const responseText = await response.text();
+                console.error('Response body:', responseText.substring(0, 500) + (responseText.length > 500 ? '...' : ''));
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            // Try to parse the response as JSON, with detailed error handling
+            let responseData;
+            try {
+                const responseText = await response.text();
+                console.log('Raw response:', responseText.substring(0, 200) + (responseText.length > 200 ? '...' : ''));
+                
+                if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+                    console.error('Webhook returned HTML instead of JSON. Full HTML response:', responseText);
+                    throw new Error('Webhook returned HTML page instead of JSON data');
+                }
+                
+                try {
+                    responseData = JSON.parse(responseText);
+                    console.log('Parsed JSON response:', responseData);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    console.error('Invalid JSON received:', responseText);
+                    throw new Error('Invalid JSON response from webhook');
+                }
+            } catch (textError) {
+                console.error('Error reading response body:', textError);
+                throw new Error('Could not read response from webhook');
+            }
+            
+            // Process the response
             const botMessageDiv = document.createElement('div');
             botMessageDiv.className = 'chat-message bot';
             botMessageDiv.textContent = Array.isArray(responseData) ? responseData[0].output : responseData.output;
             messagesContainer.appendChild(botMessageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error in startNewConversation:', error);
+            console.error('Webhook URL:', config.webhook.url);
+            console.error('Please check that:');
+            console.error('1. The URL is correct');
+            console.error('2. The n8n instance is running');
+            console.error('3. The webhook is properly configured in n8n');
+            console.error('4. There are no CORS issues (try accessing the URL directly)');
+            
+            // Display a more helpful error message
+            const errorMessageDiv = document.createElement('div');
+            errorMessageDiv.className = 'chat-message bot';
+            errorMessageDiv.textContent = "Sorry, I couldn't connect to the chat service. Please check the console for detailed error information.";
+            messagesContainer.appendChild(errorMessageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
     }
 
@@ -447,7 +564,28 @@
         messagesContainer.appendChild(userMessageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
+        // If mock data is enabled, use that instead of calling the webhook
+        if (config.webhook.useMockData) {
+            console.log('Using mock data instead of webhook (debug mode)');
+            // Get a random response from the mock data
+            const randomIndex = Math.floor(Math.random() * mockResponses.responses.length);
+            const responseData = mockResponses.responses[randomIndex];
+            
+            // Add slight delay to simulate network request
+            setTimeout(() => {
+                const botMessageDiv = document.createElement('div');
+                botMessageDiv.className = 'chat-message bot';
+                botMessageDiv.textContent = responseData.output;
+                messagesContainer.appendChild(botMessageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 500);
+            return;
+        }
+
         try {
+            console.log('Sending message to webhook:', config.webhook.url);
+            console.log('Message data:', JSON.stringify(messageData));
+            
             const response = await fetch(config.webhook.url, {
                 method: 'POST',
                 headers: {
@@ -456,7 +594,35 @@
                 body: JSON.stringify(messageData)
             });
             
-            const data = await response.json();
+            if (!response.ok) {
+                const responseText = await response.text();
+                console.error('HTTP error response:', responseText);
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            
+            // Try to parse the response as JSON with detailed error handling
+            let data;
+            try {
+                const responseText = await response.text();
+                
+                if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+                    console.error('Webhook returned HTML instead of JSON');
+                    throw new Error('Webhook returned HTML page instead of JSON data');
+                }
+                
+                try {
+                    data = JSON.parse(responseText);
+                } catch (parseError) {
+                    console.error('JSON parse error:', parseError);
+                    console.error('Invalid JSON received:', responseText);
+                    throw new Error('Invalid JSON response from webhook');
+                }
+            } catch (textError) {
+                console.error('Error reading response body:', textError);
+                throw new Error('Could not read response from webhook');
+            }
+            
+            console.log('Received response:', data);
             
             const botMessageDiv = document.createElement('div');
             botMessageDiv.className = 'chat-message bot';
@@ -464,7 +630,14 @@
             messagesContainer.appendChild(botMessageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error in sendMessage:', error);
+            
+            // Display error message to user
+            const errorMessageDiv = document.createElement('div');
+            errorMessageDiv.className = 'chat-message bot';
+            errorMessageDiv.textContent = "Sorry, I couldn't send your message. Please check console for details.";
+            messagesContainer.appendChild(errorMessageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
     }
 
@@ -500,4 +673,9 @@
             chatContainer.classList.remove('open');
         });
     });
+
+    // Add diagnostic info for setup troubleshooting
+    console.log('Chat widget initialized with config:', config);
+    console.log('If you are having issues with the webhook, set `useMockData: true` in the webhook config to test the UI');
 })();
+</script>
