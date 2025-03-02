@@ -328,54 +328,99 @@
     widgetContainer.style.setProperty('--n8n-chat-background-color', config.style.backgroundColor);
     widgetContainer.style.setProperty('--n8n-chat-font-color', config.style.fontColor);
 
+    // Create the chat container
     const chatContainer = document.createElement('div');
     chatContainer.className = `chat-container${config.style.position === 'left' ? ' position-left' : ''}`;
+
+    // Create the brand header
+    const brandHeader = document.createElement('div');
+    brandHeader.className = 'brand-header';
     
-    // Create a function to safely handle text that might contain HTML or special characters
-    function safeText(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    const newConversationHTML = `
-        <div class="brand-header">
-            <img src="${config.branding.logo}" alt="${config.branding.name}">
-            <span>${config.branding.name}</span>
-            <button class="close-button">×</button>
-        </div>
-        <div class="new-conversation">
-            <h2 class="welcome-text">${safeText(config.branding.welcomeText)}</h2>
-            <button class="new-chat-btn">
-                <svg class="message-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/>
-                </svg>
-                Send us a message
-            </button>
-            <p class="response-text">${safeText(config.branding.responseTimeText)}</p>
-        </div>
-    `;
-
-    const chatInterfaceHTML = `
-        <div class="chat-interface">
-            <div class="brand-header">
-                <img src="${config.branding.logo}" alt="${config.branding.name}">
-                <span>${config.branding.name}</span>
-                <button class="close-button">×</button>
-            </div>
-            <div class="chat-messages"></div>
-            <div class="chat-input">
-                <textarea placeholder="Type your message here..." rows="1"></textarea>
-                <button type="submit">Send</button>
-            </div>
-            <div class="chat-footer">
-                <a href="${config.branding.poweredBy?.link || '#'}" target="_blank">${config.branding.poweredBy?.text || 'Powered by n8n'}</a>
-            </div>
-        </div>
+    const brandLogo = document.createElement('img');
+    brandLogo.src = config.branding.logo || '';
+    brandLogo.alt = config.branding.name || '';
+    
+    const brandNameSpan = document.createElement('span');
+    brandNameSpan.textContent = config.branding.name || '';
+    
+    const closeButtonHeader = document.createElement('button');
+    closeButtonHeader.className = 'close-button';
+    closeButtonHeader.innerHTML = '&times;';
+    
+    brandHeader.appendChild(brandLogo);
+    brandHeader.appendChild(brandNameSpan);
+    brandHeader.appendChild(closeButtonHeader);
+    
+    // Create new conversation section
+    const newConversation = document.createElement('div');
+    newConversation.className = 'new-conversation';
+    
+    const welcomeHeading = document.createElement('h2');
+    welcomeHeading.className = 'welcome-text';
+    welcomeHeading.textContent = config.branding.welcomeText || '';
+    
+    const newChatButton = document.createElement('button');
+    newChatButton.className = 'new-chat-btn';
+    newChatButton.innerHTML = `
+        <svg class="message-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/>
+        </svg>
+        Send us a message
     `;
     
-    chatContainer.innerHTML = newConversationHTML + chatInterfaceHTML;
+    const responseTimePara = document.createElement('p');
+    responseTimePara.className = 'response-text';
+    responseTimePara.textContent = config.branding.responseTimeText || '';
     
+    newConversation.appendChild(welcomeHeading);
+    newConversation.appendChild(newChatButton);
+    newConversation.appendChild(responseTimePara);
+    
+    // Create chat interface
+    const chatInterface = document.createElement('div');
+    chatInterface.className = 'chat-interface';
+    
+    // Clone brand header for chat interface
+    const chatBrandHeader = brandHeader.cloneNode(true);
+    
+    const chatMessagesDiv = document.createElement('div');
+    chatMessagesDiv.className = 'chat-messages';
+    
+    const chatInputDiv = document.createElement('div');
+    chatInputDiv.className = 'chat-input';
+    
+    const chatTextarea = document.createElement('textarea');
+    chatTextarea.placeholder = 'Type your message here...';
+    chatTextarea.rows = 1;
+    
+    const sendButton = document.createElement('button');
+    sendButton.type = 'submit';
+    sendButton.textContent = 'Send';
+    
+    chatInputDiv.appendChild(chatTextarea);
+    chatInputDiv.appendChild(sendButton);
+    
+    const footerDiv = document.createElement('div');
+    footerDiv.className = 'chat-footer';
+    
+    const poweredByLink = document.createElement('a');
+    poweredByLink.href = config.branding.poweredBy?.link || '#';
+    poweredByLink.target = '_blank';
+    poweredByLink.textContent = config.branding.poweredBy?.text || 'Powered by n8n';
+    
+    footerDiv.appendChild(poweredByLink);
+    
+    chatInterface.appendChild(chatBrandHeader);
+    chatInterface.appendChild(chatMessagesDiv);
+    chatInterface.appendChild(chatInputDiv);
+    chatInterface.appendChild(footerDiv);
+    
+    // Add all components to the chat container
+    chatContainer.appendChild(brandHeader);
+    chatContainer.appendChild(newConversation);
+    chatContainer.appendChild(chatInterface);
+    
+    // Create toggle button
     const toggleButton = document.createElement('button');
     toggleButton.className = `chat-toggle${config.style.position === 'left' ? ' position-left' : ''}`;
     toggleButton.innerHTML = `
@@ -383,18 +428,13 @@
             <path d="M12 2C6.477 2 2 6.477 2 12c0 1.821.487 3.53 1.338 5L2.5 21.5l4.5-.838A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18c-1.476 0-2.886-.313-4.156-.878l-3.156.586.586-3.156A7.962 7.962 0 014 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/>
         </svg>`;
     
+    // Add components to the document
     widgetContainer.appendChild(chatContainer);
     widgetContainer.appendChild(toggleButton);
     document.body.appendChild(widgetContainer);
 
-    const newChatBtn = chatContainer.querySelector('.new-chat-btn');
-    const chatInterface = chatContainer.querySelector('.chat-interface');
-    const messagesContainer = chatContainer.querySelector('.chat-messages');
-    const textarea = chatContainer.querySelector('textarea');
-    const sendButton = chatContainer.querySelector('button[type="submit"]');
-
+    // Helper function to generate UUID for session tracking
     function generateUUID() {
-        // Fallback for browsers that don't support crypto.randomUUID()
         if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
             return crypto.randomUUID();
         } else {
@@ -405,23 +445,34 @@
         }
     }
 
+    // Function to start a new conversation
     async function startNewConversation() {
+        // Generate a new session ID
         currentSessionId = generateUUID();
         
-        // Skip initial API call that's causing the 500 error
-        // Display interface directly with welcome message
-        chatContainer.querySelector('.brand-header').style.display = 'none';
-        chatContainer.querySelector('.new-conversation').style.display = 'none';
+        // Switch to chat interface
+        brandHeader.style.display = 'none';
+        newConversation.style.display = 'none';
         chatInterface.classList.add('active');
 
-        const botMessageDiv = document.createElement('div');
-        botMessageDiv.className = 'chat-message bot';
-        botMessageDiv.textContent = config.branding.welcomeText || "Hi, how can I help you today?";
-        messagesContainer.appendChild(botMessageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        // Add initial welcome message from bot
+        const botMessage = document.createElement('div');
+        botMessage.className = 'chat-message bot';
+        botMessage.textContent = config.branding.welcomeText || 'Hi, how can I help you today?';
+        chatMessagesDiv.appendChild(botMessage);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
     }
 
+    // Function to send a message
     async function sendMessage(message) {
+        if (!message || !message.trim()) return;
+        
+        // Make sure we have a session ID
+        if (!currentSessionId) {
+            currentSessionId = generateUUID();
+        }
+        
+        // Create message payload
         const messageData = {
             action: "sendMessage",
             sessionId: currentSessionId,
@@ -434,13 +485,15 @@
             }
         };
 
+        // Show user message in chat
         const userMessageDiv = document.createElement('div');
         userMessageDiv.className = 'chat-message user';
         userMessageDiv.textContent = message;
-        messagesContainer.appendChild(userMessageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        chatMessagesDiv.appendChild(userMessageDiv);
+        chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
 
         try {
+            // Send message to server
             const response = await fetch(config.webhook.url, {
                 method: 'POST',
                 headers: {
@@ -449,47 +502,54 @@
                 body: JSON.stringify(messageData)
             });
             
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+            
             const data = await response.json();
             
+            // Add bot response to chat
             const botMessageDiv = document.createElement('div');
             botMessageDiv.className = 'chat-message bot';
             
-            // Get the bot's response text
-            const botText = Array.isArray(data) ? data[0].output : data.output;
-            // Apply textContent to safely handle any HTML
+            // Get bot response text, handling different formats
+            const botText = Array.isArray(data) ? 
+                (data[0]?.output || "I didn't understand that. Could you try again?") : 
+                (data?.output || "I didn't understand that. Could you try again?");
+            
             botMessageDiv.textContent = botText;
-            
-            messagesContainer.appendChild(botMessageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            chatMessagesDiv.appendChild(botMessageDiv);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error sending message:', error);
             
-            // Display error message to user
+            // Show error message
             const errorMessageDiv = document.createElement('div');
             errorMessageDiv.className = 'chat-message bot';
             errorMessageDiv.textContent = "Sorry, I couldn't send your message. Please try again later.";
-            messagesContainer.appendChild(errorMessageDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            chatMessagesDiv.appendChild(errorMessageDiv);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
         }
     }
 
-    newChatBtn.addEventListener('click', startNewConversation);
+    // Event listeners
+    newChatButton.addEventListener('click', startNewConversation);
     
     sendButton.addEventListener('click', () => {
-        const message = textarea.value.trim();
+        const message = chatTextarea.value.trim();
         if (message) {
             sendMessage(message);
-            textarea.value = '';
+            chatTextarea.value = '';
         }
     });
     
-    textarea.addEventListener('keypress', (e) => {
+    chatTextarea.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            const message = textarea.value.trim();
+            const message = chatTextarea.value.trim();
             if (message) {
                 sendMessage(message);
-                textarea.value = '';
+                chatTextarea.value = '';
             }
         }
     });
@@ -498,11 +558,11 @@
         chatContainer.classList.toggle('open');
     });
 
-    // Add close button handlers
+    // Handle close buttons
     const closeButtons = chatContainer.querySelectorAll('.close-button');
     closeButtons.forEach(button => {
         button.addEventListener('click', () => {
             chatContainer.classList.remove('open');
         });
     });
-})();
+})(); 
