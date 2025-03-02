@@ -163,6 +163,8 @@
             word-wrap: break-word;
             font-size: 14px;
             line-height: 1.5;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
         }
 
         .mia-chat-widget .chat-message.user {
@@ -171,6 +173,7 @@
             align-self: flex-end;
             box-shadow: 0 4px 12px rgba(133, 79, 255, 0.2);
             border: none;
+            border-bottom-right-radius: 4px;
         }
 
         .mia-chat-widget .chat-message.bot {
@@ -179,6 +182,7 @@
             color: var(--chat--color-font);
             align-self: flex-start;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-bottom-left-radius: 4px;
         }
 
         .mia-chat-widget .chat-input {
@@ -186,6 +190,7 @@
             background: var(--chat--color-background);
             border-top: 1px solid rgba(133, 79, 255, 0.1);
             display: flex;
+            align-items: center;
             gap: 8px;
         }
 
@@ -199,10 +204,10 @@
             resize: none;
             font-family: inherit;
             font-size: 14px;
-            height: 24px;
-            max-height: 120px;
             min-height: 24px;
+            max-height: 120px;
             overflow-y: auto;
+            line-height: 1.4;
         }
 
         .mia-chat-widget .chat-input textarea::placeholder {
@@ -220,6 +225,11 @@
             transition: transform 0.2s;
             font-family: inherit;
             font-weight: 500;
+            height: 48px;
+            min-width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .mia-chat-widget .chat-input button:hover {
@@ -342,13 +352,25 @@
     const chatContainer = document.createElement('div');
     chatContainer.className = `chat-container${config.style.position === 'left' ? ' position-left' : ''}`;
 
+    // Force image to update by adding a unique timestamp
+    function updateImageWithTimestamp(imgElement, originalSrc) {
+        if (!originalSrc) return;
+        
+        const timestamp = new Date().getTime();
+        if (originalSrc.includes('?')) {
+            imgElement.src = `${originalSrc}&_t=${timestamp}`;
+        } else {
+            imgElement.src = `${originalSrc}?_t=${timestamp}`;
+        }
+    }
+
     // Create the brand header
     const brandHeader = document.createElement('div');
     brandHeader.className = 'brand-header';
     
     const brandLogo = document.createElement('img');
-    brandLogo.src = config.branding.logo || '';
     brandLogo.alt = config.branding.name || '';
+    updateImageWithTimestamp(brandLogo, config.branding.logo);
     
     const brandNameSpan = document.createElement('span');
     brandNameSpan.textContent = config.branding.name || '';
@@ -392,6 +414,11 @@
     
     // Clone brand header for chat interface
     const chatBrandHeader = brandHeader.cloneNode(true);
+    // Make sure the cloned logo also has the updated image
+    const chatBrandLogo = chatBrandHeader.querySelector('img');
+    if (chatBrandLogo) {
+        updateImageWithTimestamp(chatBrandLogo, config.branding.logo);
+    }
     
     const chatMessagesDiv = document.createElement('div');
     chatMessagesDiv.className = 'chat-messages';
@@ -471,6 +498,15 @@
         const botMessage = document.createElement('div');
         botMessage.className = 'chat-message bot';
         botMessage.textContent = config.branding.welcomeText || 'Hi, how can I help you today?';
+        
+        // If the message isn't showing emoji properly, force it through a span with innerHtml
+        if (config.branding.welcomeText && config.branding.welcomeText.includes('👋')) {
+            botMessage.textContent = '';
+            const textSpan = document.createElement('span');
+            textSpan.innerHTML = config.branding.welcomeText;
+            botMessage.appendChild(textSpan);
+        }
+        
         chatMessagesDiv.appendChild(botMessage);
         chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
     }
