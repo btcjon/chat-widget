@@ -1,6 +1,6 @@
 // Mia Chat Widget Script (Custom Version)
 (function() {
-    console.log("Loading custom Mia Chat Widget v1.1");
+    console.log("Loading custom Mia Chat Widget v1.2");
     
     // Create and inject styles
     const styles = `
@@ -100,6 +100,7 @@
             margin-bottom: 24px;
             line-height: 1.3;
             letter-spacing: -0.5px;
+            word-spacing: 2px;
         }
 
         .mia-chat-widget .new-chat-btn {
@@ -192,7 +193,7 @@
             border-top: 1px solid rgba(133, 79, 255, 0.1);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
         }
 
         .mia-chat-widget .chat-input textarea {
@@ -205,8 +206,8 @@
             resize: none;
             font-family: inherit;
             font-size: 14px;
-            height: 42px;
-            min-height: 42px;
+            height: 48px;
+            min-height: 48px;
             max-height: 120px;
             overflow-y: auto;
             line-height: 1.4;
@@ -364,18 +365,6 @@
     const chatContainer = document.createElement('div');
     chatContainer.className = `chat-container${config.style.position === 'left' ? ' position-left' : ''}`;
 
-    // Force image to update by adding a unique timestamp
-    function updateImageWithTimestamp(imgElement, originalSrc) {
-        if (!originalSrc) return;
-        
-        const timestamp = new Date().getTime();
-        if (originalSrc.includes('?')) {
-            imgElement.src = `${originalSrc}&_t=${timestamp}`;
-        } else {
-            imgElement.src = `${originalSrc}?_t=${timestamp}`;
-        }
-    }
-
     // Create the brand header
     const brandHeader = document.createElement('div');
     brandHeader.className = 'brand-header';
@@ -402,11 +391,24 @@
     const welcomeHeading = document.createElement('h2');
     welcomeHeading.className = 'welcome-text';
     
-    // Handle welcome text with emoji
-    if (config.branding.welcomeText && config.branding.welcomeText.includes('👋')) {
-        welcomeHeading.innerHTML = config.branding.welcomeText.replace('👋', '<span style="display:inline-block;margin:0 4px;">👋</span>');
-    } else {
-        welcomeHeading.textContent = config.branding.welcomeText || '';
+    // Format welcome text with proper spacing
+    if (config.branding.welcomeText) {
+        // Replace emoji with properly spaced version and add spaces between words
+        let formattedText = config.branding.welcomeText;
+        
+        // Handle the wave emoji specifically
+        if (formattedText.includes('👋')) {
+            formattedText = formattedText.replace('👋', ' 👋 ');
+        }
+        
+        // Make sure there are spaces between words
+        formattedText = formattedText
+            .replace(/([a-zA-Z])([,.])/g, '$1$2 ') // Add space after punctuation if missing
+            .replace(/([,.])([a-zA-Z])/g, '$1 $2') // Add space before text after punctuation
+            .replace(/\s+/g, ' ') // Normalize spaces
+            .trim();
+            
+        welcomeHeading.textContent = formattedText;
     }
     
     const newChatButton = document.createElement('button');
@@ -516,13 +518,26 @@
         const botMessage = document.createElement('div');
         botMessage.className = 'chat-message bot';
         
-        // If the message contains an emoji, use innerHTML with proper spacing
-        if (config.branding.welcomeText && config.branding.welcomeText.includes('👋')) {
-            const spanElement = document.createElement('span');
-            spanElement.innerHTML = config.branding.welcomeText.replace('👋', '<span style="display:inline-block;margin:0 4px;">👋</span>');
-            botMessage.appendChild(spanElement);
+        // Format welcome text with proper spacing for the chat message
+        if (config.branding.welcomeText) {
+            // Replace emoji with properly spaced version and add spaces between words
+            let formattedText = config.branding.welcomeText;
+            
+            // Handle the wave emoji specifically
+            if (formattedText.includes('👋')) {
+                formattedText = formattedText.replace('👋', ' 👋 ');
+            }
+            
+            // Make sure there are spaces between words
+            formattedText = formattedText
+                .replace(/([a-zA-Z])([,.])/g, '$1$2 ') // Add space after punctuation if missing
+                .replace(/([,.])([a-zA-Z])/g, '$1 $2') // Add space before text after punctuation
+                .replace(/\s+/g, ' ') // Normalize spaces
+                .trim();
+                
+            botMessage.textContent = formattedText;
         } else {
-            botMessage.textContent = config.branding.welcomeText || 'Hi, how can I help you today?';
+            botMessage.textContent = 'Hi, how can I help you today?';
         }
         
         chatMessagesDiv.appendChild(botMessage);
@@ -618,7 +633,7 @@
         if (message) {
             sendMessage(message);
             chatTextarea.value = '';
-            chatTextarea.style.height = '42px'; // Reset height after sending
+            chatTextarea.style.height = '48px'; // Reset height after sending
         }
     });
     
@@ -629,7 +644,7 @@
             if (message) {
                 sendMessage(message);
                 chatTextarea.value = '';
-                chatTextarea.style.height = '42px'; // Reset height after sending
+                chatTextarea.style.height = '48px'; // Reset height after sending
             }
         }
     });
@@ -648,9 +663,9 @@
     
     // Auto-growing textarea
     chatTextarea.addEventListener('input', function() {
-        this.style.height = '42px'; // Reset height
+        this.style.height = '48px'; // Reset height
         this.style.height = (this.scrollHeight) + 'px';
     });
     
-    console.log("Mia Chat Widget initialized successfully v1.1");
+    console.log("Mia Chat Widget initialized successfully v1.2");
 })();
