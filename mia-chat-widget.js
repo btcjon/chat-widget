@@ -1,17 +1,18 @@
-// Chat Widget Script
+// Mia Chat Widget Script (Custom Version)
 (function() {
+    console.log("Loading custom Mia Chat Widget v1.0");
+    
     // Create and inject styles
     const styles = `
-        .n8n-chat-widget {
-            --chat--color-primary: var(--n8n-chat-primary-color, #854fff);
-            --chat--color-secondary: var(--n8n-chat-secondary-color, #6b3fd4);
-            --chat--color-background: var(--n8n-chat-background-color, #ffffff);
-            --chat--color-font: var(--n8n-chat-font-color, #333333);
-            /* Using system fonts instead of external Geist Sans */
+        .mia-chat-widget {
+            --chat--color-primary: var(--mia-chat-primary-color, #854fff);
+            --chat--color-secondary: var(--mia-chat-secondary-color, #6b3fd4);
+            --chat--color-background: var(--mia-chat-background-color, #ffffff);
+            --chat--color-font: var(--mia-chat-font-color, #333333);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
 
-        .n8n-chat-widget .chat-container {
+        .mia-chat-widget .chat-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -27,17 +28,17 @@
             font-family: inherit;
         }
 
-        .n8n-chat-widget .chat-container.position-left {
+        .mia-chat-widget .chat-container.position-left {
             right: auto;
             left: 20px;
         }
 
-        .n8n-chat-widget .chat-container.open {
+        .mia-chat-widget .chat-container.open {
             display: flex;
             flex-direction: column;
         }
 
-        .n8n-chat-widget .brand-header {
+        .mia-chat-widget .brand-header {
             padding: 16px;
             display: flex;
             align-items: center;
@@ -46,7 +47,7 @@
             position: relative;
         }
 
-        .n8n-chat-widget .close-button {
+        .mia-chat-widget .close-button {
             position: absolute;
             right: 16px;
             top: 50%;
@@ -64,22 +65,24 @@
             opacity: 0.6;
         }
 
-        .n8n-chat-widget .close-button:hover {
+        .mia-chat-widget .close-button:hover {
             opacity: 1;
         }
 
-        .n8n-chat-widget .brand-header img {
+        .mia-chat-widget .brand-header img {
             width: 32px;
             height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
-        .n8n-chat-widget .brand-header span {
+        .mia-chat-widget .brand-header span {
             font-size: 18px;
             font-weight: 500;
             color: var(--chat--color-font);
         }
 
-        .n8n-chat-widget .new-conversation {
+        .mia-chat-widget .new-conversation {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -90,7 +93,7 @@
             max-width: 300px;
         }
 
-        .n8n-chat-widget .welcome-text {
+        .mia-chat-widget .welcome-text {
             font-size: 24px;
             font-weight: 600;
             color: var(--chat--color-font);
@@ -98,7 +101,7 @@
             line-height: 1.3;
         }
 
-        .n8n-chat-widget .new-chat-btn {
+        .mia-chat-widget .new-chat-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -117,33 +120,33 @@
             margin-bottom: 12px;
         }
 
-        .n8n-chat-widget .new-chat-btn:hover {
+        .mia-chat-widget .new-chat-btn:hover {
             transform: scale(1.02);
         }
 
-        .n8n-chat-widget .message-icon {
+        .mia-chat-widget .message-icon {
             width: 20px;
             height: 20px;
         }
 
-        .n8n-chat-widget .response-text {
+        .mia-chat-widget .response-text {
             font-size: 14px;
             color: var(--chat--color-font);
             opacity: 0.7;
             margin: 0;
         }
 
-        .n8n-chat-widget .chat-interface {
+        .mia-chat-widget .chat-interface {
             display: none;
             flex-direction: column;
             height: 100%;
         }
 
-        .n8n-chat-widget .chat-interface.active {
+        .mia-chat-widget .chat-interface.active {
             display: flex;
         }
 
-        .n8n-chat-widget .chat-messages {
+        .mia-chat-widget .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 20px;
@@ -152,7 +155,7 @@
             flex-direction: column;
         }
 
-        .n8n-chat-widget .chat-message {
+        .mia-chat-widget .chat-message {
             padding: 12px 16px;
             margin: 8px 0;
             border-radius: 12px;
@@ -162,7 +165,7 @@
             line-height: 1.5;
         }
 
-        .n8n-chat-widget .chat-message.user {
+        .mia-chat-widget .chat-message.user {
             background: linear-gradient(135deg, var(--chat--color-primary) 0%, var(--chat--color-secondary) 100%);
             color: white;
             align-self: flex-end;
@@ -170,7 +173,7 @@
             border: none;
         }
 
-        .n8n-chat-widget .chat-message.bot {
+        .mia-chat-widget .chat-message.bot {
             background: var(--chat--color-background);
             border: 1px solid rgba(133, 79, 255, 0.2);
             color: var(--chat--color-font);
@@ -178,7 +181,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        .n8n-chat-widget .chat-input {
+        .mia-chat-widget .chat-input {
             padding: 16px;
             background: var(--chat--color-background);
             border-top: 1px solid rgba(133, 79, 255, 0.1);
@@ -186,7 +189,7 @@
             gap: 8px;
         }
 
-        .n8n-chat-widget .chat-input textarea {
+        .mia-chat-widget .chat-input textarea {
             flex: 1;
             padding: 12px;
             border: 1px solid rgba(133, 79, 255, 0.2);
@@ -196,14 +199,18 @@
             resize: none;
             font-family: inherit;
             font-size: 14px;
+            height: 24px;
+            max-height: 120px;
+            min-height: 24px;
+            overflow-y: auto;
         }
 
-        .n8n-chat-widget .chat-input textarea::placeholder {
+        .mia-chat-widget .chat-input textarea::placeholder {
             color: var(--chat--color-font);
             opacity: 0.6;
         }
 
-        .n8n-chat-widget .chat-input button {
+        .mia-chat-widget .chat-input button {
             background: linear-gradient(135deg, var(--chat--color-primary) 0%, var(--chat--color-secondary) 100%);
             color: white;
             border: none;
@@ -215,11 +222,11 @@
             font-weight: 500;
         }
 
-        .n8n-chat-widget .chat-input button:hover {
+        .mia-chat-widget .chat-input button:hover {
             transform: scale(1.05);
         }
 
-        .n8n-chat-widget .chat-toggle {
+        .mia-chat-widget .chat-toggle {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -238,29 +245,29 @@
             justify-content: center;
         }
 
-        .n8n-chat-widget .chat-toggle.position-left {
+        .mia-chat-widget .chat-toggle.position-left {
             right: auto;
             left: 20px;
         }
 
-        .n8n-chat-widget .chat-toggle:hover {
+        .mia-chat-widget .chat-toggle:hover {
             transform: scale(1.05);
         }
 
-        .n8n-chat-widget .chat-toggle svg {
+        .mia-chat-widget .chat-toggle svg {
             width: 24px;
             height: 24px;
             fill: currentColor;
         }
 
-        .n8n-chat-widget .chat-footer {
+        .mia-chat-widget .chat-footer {
             padding: 8px;
             text-align: center;
             background: var(--chat--color-background);
             border-top: 1px solid rgba(133, 79, 255, 0.1);
         }
 
-        .n8n-chat-widget .chat-footer a {
+        .mia-chat-widget .chat-footer a {
             color: var(--chat--color-primary);
             text-decoration: none;
             font-size: 12px;
@@ -269,7 +276,7 @@
             font-family: inherit;
         }
 
-        .n8n-chat-widget .chat-footer a:hover {
+        .mia-chat-widget .chat-footer a:hover {
             opacity: 1;
         }
     `;
@@ -313,20 +320,23 @@
         } : defaultConfig;
 
     // Prevent multiple initializations
-    if (window.N8NChatWidgetInitialized) return;
-    window.N8NChatWidgetInitialized = true;
+    if (window.MiaChatWidgetInitialized) {
+        console.log("Widget already initialized, exiting");
+        return;
+    }
+    window.MiaChatWidgetInitialized = true;
 
     let currentSessionId = '';
 
     // Create widget container
     const widgetContainer = document.createElement('div');
-    widgetContainer.className = 'n8n-chat-widget';
+    widgetContainer.className = 'mia-chat-widget';
     
     // Set CSS variables for colors
-    widgetContainer.style.setProperty('--n8n-chat-primary-color', config.style.primaryColor);
-    widgetContainer.style.setProperty('--n8n-chat-secondary-color', config.style.secondaryColor);
-    widgetContainer.style.setProperty('--n8n-chat-background-color', config.style.backgroundColor);
-    widgetContainer.style.setProperty('--n8n-chat-font-color', config.style.fontColor);
+    widgetContainer.style.setProperty('--mia-chat-primary-color', config.style.primaryColor);
+    widgetContainer.style.setProperty('--mia-chat-secondary-color', config.style.secondaryColor);
+    widgetContainer.style.setProperty('--mia-chat-background-color', config.style.backgroundColor);
+    widgetContainer.style.setProperty('--mia-chat-font-color', config.style.fontColor);
 
     // Create the chat container
     const chatContainer = document.createElement('div');
@@ -445,9 +455,9 @@
         }
     }
 
-    // Function to start a new conversation
+    // Function to start a new conversation - NO API CALLS HERE
     function startNewConversation() {
-        console.log("Starting new conversation - NO API CALL");
+        console.log("Starting new conversation - CUSTOM VERSION WITH NO API CALL");
         
         // Generate a new session ID
         currentSessionId = generateUUID();
@@ -579,4 +589,12 @@
             chatContainer.classList.remove('open');
         });
     });
+    
+    // Auto-growing textarea
+    chatTextarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+    
+    console.log("Mia Chat Widget initialized successfully");
 })(); 
