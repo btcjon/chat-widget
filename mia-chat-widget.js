@@ -1,6 +1,6 @@
 // Mia Chat Widget Script (Custom Version)
 (function() {
-    console.log("Loading custom Mia Chat Widget v1.2");
+    console.log("Loading custom Mia Chat Widget v1.3");
     
     // Create and inject styles
     const styles = `
@@ -391,24 +391,15 @@
     const welcomeHeading = document.createElement('h2');
     welcomeHeading.className = 'welcome-text';
     
-    // Format welcome text with proper spacing
+    // Use HTML for welcome text to ensure proper spacing
     if (config.branding.welcomeText) {
-        // Replace emoji with properly spaced version and add spaces between words
-        let formattedText = config.branding.welcomeText;
-        
-        // Handle the wave emoji specifically
-        if (formattedText.includes('👋')) {
-            formattedText = formattedText.replace('👋', ' 👋 ');
+        // Split the text around the emoji
+        const parts = config.branding.welcomeText.split('👋');
+        if (parts.length > 1) {
+            welcomeHeading.innerHTML = `${parts[0]}<span style="display:inline-block;margin:0 6px;">👋</span>${parts[1]}`;
+        } else {
+            welcomeHeading.textContent = config.branding.welcomeText;
         }
-        
-        // Make sure there are spaces between words
-        formattedText = formattedText
-            .replace(/([a-zA-Z])([,.])/g, '$1$2 ') // Add space after punctuation if missing
-            .replace(/([,.])([a-zA-Z])/g, '$1 $2') // Add space before text after punctuation
-            .replace(/\s+/g, ' ') // Normalize spaces
-            .trim();
-            
-        welcomeHeading.textContent = formattedText;
     } else {
         welcomeHeading.textContent = 'Hi, how can I help you?';
     }
@@ -520,24 +511,15 @@
         const botMessage = document.createElement('div');
         botMessage.className = 'chat-message bot';
         
-        // Format welcome text with proper spacing for the chat message
+        // Use HTML for welcome text to ensure proper spacing
         if (config.branding.welcomeText) {
-            // Replace emoji with properly spaced version and add spaces between words
-            let formattedText = config.branding.welcomeText;
-            
-            // Handle the wave emoji specifically
-            if (formattedText.includes('👋')) {
-                formattedText = formattedText.replace('👋', ' 👋 ');
+            // Split the text around the emoji
+            const parts = config.branding.welcomeText.split('👋');
+            if (parts.length > 1) {
+                botMessage.innerHTML = `${parts[0]}<span style="display:inline-block;margin:0 6px;">👋</span>${parts[1]}`;
+            } else {
+                botMessage.textContent = config.branding.welcomeText;
             }
-            
-            // Make sure there are spaces between words
-            formattedText = formattedText
-                .replace(/([a-zA-Z])([,.])/g, '$1$2 ') // Add space after punctuation if missing
-                .replace(/([,.])([a-zA-Z])/g, '$1 $2') // Add space before text after punctuation
-                .replace(/\s+/g, ' ') // Normalize spaces
-                .trim();
-                
-            botMessage.textContent = formattedText;
         } else {
             botMessage.textContent = 'Hi, how can I help you today?';
         }
