@@ -409,6 +409,8 @@
             .trim();
             
         welcomeHeading.textContent = formattedText;
+    } else {
+        welcomeHeading.textContent = 'Hi, how can I help you?';
     }
     
     const newChatButton = document.createElement('button');
@@ -633,7 +635,7 @@
         if (message) {
             sendMessage(message);
             chatTextarea.value = '';
-            chatTextarea.style.height = '48px'; // Reset height after sending
+            chatTextarea.style.height = '60px'; // Reset height after sending
         }
     });
     
@@ -644,7 +646,7 @@
             if (message) {
                 sendMessage(message);
                 chatTextarea.value = '';
-                chatTextarea.style.height = '48px'; // Reset height after sending
+                chatTextarea.style.height = '60px'; // Reset height after sending
             }
         }
     });
@@ -663,9 +665,9 @@
     
     // Auto-growing textarea
     chatTextarea.addEventListener('input', function() {
-        this.style.height = '48px'; // Reset height
+        this.style.height = '60px'; // Reset height
         this.style.height = (this.scrollHeight) + 'px';
     });
     
-    console.log("Mia Chat Widget initialized successfully v1.2");
+    console.log("Mia Chat Widget initialized successfully v1.3");
 })();
