@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget Production Test</title>
+</head>
+<body>
+    <h1>Chat Widget Production Test</h1>
+    <p>This page tests the chat widget in a production-like environment.</p>
+
+    <!-- Widget Configuration -->
+    <script>
+        window.ChatWidgetConfig = {
+            webhook: {
+                url: 'https://n8n-gk044o0kg0gookc840oosok0.aifunnel.chat/webhook/53c136fe-3e77-4709-a143-fe82746dd8b6/chat',
+                route: 'general'
+            },
+            branding: {
+                logo: 'https://miaflint.com/wp-content/uploads/2025/03/miaheadshot-small.jpg',
+                name: 'mia',
+                welcomeText: 'Hi 👋, how can I help you?',
+                responseTimeText: 'We typically respond right away'
+            },
+            style: {
+                primaryColor: '#854fff',
+                secondaryColor: '#6b3fd4',
+                position: 'right',
+                backgroundColor: '#ffffff',
+                fontColor: '#333333'
+            }
+        };
+    </script>
+    
+    <!-- Load the widget script with cache-busting -->
+    <script>
+        (function() {
+            // Create a script element with a unique timestamp
+            const script = document.createElement('script');
+            script.src = 'mia-chat-widget-v2.js?v=1.4&t=' + new Date().getTime();
+            script.async = true;
+            
+            // Append the script to the document
+            document.body.appendChild(script);
+            
+            // Log that we're loading the script
+            console.log('Loading chat widget with cache-busting: ' + script.src);
+        })();
+    </script>
+</body>
+</html> 

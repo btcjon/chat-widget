@@ -208,8 +208,8 @@
             resize: none;
             font-family: inherit;
             font-size: 14px;
-            height: 48px;
-            min-height: 48px;
+            height: 60px;
+            min-height: 60px;
             max-height: 120px;
             overflow-y: auto;
             line-height: 1.4;
@@ -227,7 +227,7 @@
             transition: transform 0.2s;
             font-family: inherit;
             font-weight: 500;
-            height: 48px;
+            height: 60px;
             min-width: 80px;
             display: flex;
             align-items: center;
